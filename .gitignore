@@ -6,3 +6,7 @@
 /build
 /build_dir.*
 /host
+
+/matrices/sparm-mtx/*
+!/matrices/sparm-mtx/Wordnet3.mtx
+!find-mtx-readme.txt
