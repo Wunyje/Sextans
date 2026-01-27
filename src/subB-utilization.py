@@ -74,3 +74,44 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    import matplotlib.pyplot as plt
+
+    # 数据
+    utilization = [
+        0.3870,0.4856,0.5483,0.3477,0.3118,0.3713,0.3159,0.2771,0.3369,0.2546,
+        0.2844,0.1838,0.4456,0.3809,0.2605,0.3323,0.5840,0.9202,0.8357
+    ]
+    windows_mod = list(range(19))
+    labels = [f"A{i}" for i in range(19)]
+
+    # 设置全局字体为 Times New Roman
+    plt.rcParams["font.family"] = "Times New Roman"
+
+    # 绘图
+    fig, ax = plt.subplots(figsize=(10,6))
+    bars = ax.bar(windows_mod, utilization, width=0.9, color='steelblue')
+
+    # 设置横轴刻度
+    ax.set_xticks(windows_mod)
+    ax.set_xticklabels(labels, rotation=45, fontsize=14)
+
+    # 去掉纵坐标刻度和标签
+    ax.set_yticks([])
+    ax.set_ylabel("")
+    ax.set_xlabel("")
+    plt.title("")
+
+    # 去掉边框
+    for spine in ["top","right","left","bottom"]:
+        ax.spines[spine].set_visible(False)
+
+    # 在柱子上显示数值
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, height + 0.01,
+                f"{height:.2f}", ha='center', va='bottom', fontsize=14)
+
+    plt.tight_layout()
+    plt.show()
+
