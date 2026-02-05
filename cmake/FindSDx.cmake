@@ -38,25 +38,51 @@ if(SDx_FOUND)
 endif()
 
 # -------------------------------------------------------------------
-# Define replacement for add_xocc_hw_link_targets
+# Define add_xocc_hw_link_targets
+# 用法：
+#   add_xocc_hw_link_targets(
+#     <base_name>
+#     <xo_file>
+#     HW_EMU_XCLBIN <emu_target_name>
+#     HW_XCLBIN <hw_target_name>
+#     [EXTRA_ARGS ...]
+#   )
 # -------------------------------------------------------------------
-function(add_xocc_hw_link_targets target_name xo_file)
+function(add_xocc_hw_link_targets base_name xo_file)
   if(NOT VPP_EXECUTABLE)
     message(FATAL_ERROR "v++ not found, cannot create hardware link target")
   endif()
 
+  set(options)
+  set(oneValueArgs HW_EMU_XCLBIN HW_XCLBIN)
+  set(multiValueArgs EXTRA_ARGS)
+  cmake_parse_arguments(XOCC "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
   # 输出文件路径
-  set(xclbin_file ${CMAKE_BINARY_DIR}/${target_name}.xclbin)
+  set(hw_xclbin_file ${CMAKE_BINARY_DIR}/${base_name}.xclbin)
+  set(hw_emu_xclbin_file ${CMAKE_BINARY_DIR}/${base_name}_emu.xclbin)
 
-  # 用 add_custom_command 生成文件
+  # 硬件 xclbin
   add_custom_command(
-    OUTPUT ${xclbin_file}
-    COMMAND ${VPP_EXECUTABLE} -t hw --link ${xo_file} -o ${xclbin_file}
+    OUTPUT ${hw_xclbin_file}
+    COMMAND ${VPP_EXECUTABLE} -t hw --link ${xo_file} -o ${hw_xclbin_file} ${XOCC_EXTRA_ARGS}
     DEPENDS ${xo_file}
-    COMMENT "Linking hardware kernel ${xo_file} -> ${xclbin_file}"
+    COMMENT "Linking hardware kernel ${xo_file} -> ${hw_xclbin_file}"
   )
+  add_custom_target(${XOCC_HW_XCLBIN} ALL DEPENDS ${hw_xclbin_file})
+  set_target_properties(${XOCC_HW_XCLBIN} PROPERTIES FILE_NAME ${hw_xclbin_file})
 
-  # 自动去掉路径，只保留文件名作为 target 名字
-  get_filename_component(target_basename ${target_name} NAME)
-  add_custom_target(${target_basename}_hw_link ALL DEPENDS ${xclbin_file})
+  # 硬件仿真 xclbin
+  add_custom_command(
+    OUTPUT ${hw_emu_xclbin_file}
+    COMMAND ${VPP_EXECUTABLE} -t hw_emu --link ${xo_file} -o ${hw_emu_xclbin_file} ${XOCC_EXTRA_ARGS}
+    DEPENDS ${xo_file}
+    COMMENT "Linking hardware emu kernel ${xo_file} -> ${hw_emu_xclbin_file}"
+  )
+  add_custom_target(${XOCC_HW_EMU_XCLBIN} ALL DEPENDS ${hw_emu_xclbin_file})
+  set_target_properties(${XOCC_HW_EMU_XCLBIN} PROPERTIES FILE_NAME ${hw_emu_xclbin_file})
+
+  # 导出变量
+  set(hw_xclbin ${XOCC_HW_XCLBIN} PARENT_SCOPE)
+  set(hw_emu_xclbin ${XOCC_HW_EMU_XCLBIN} PARENT_SCOPE)
 endfunction()
