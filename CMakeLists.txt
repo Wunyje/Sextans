@@ -51,16 +51,16 @@ add_custom_target(
   COMMAND $<TARGET_FILE:sextans> ../matrices/nasa4704/nasa4704.mtx 16
   DEPENDS sextans
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-# add_custom_target(
-#   hwsim
-#   COMMAND TAPAB=$<TARGET_PROPERTY:${hw_emu_xclbin},FILE_NAME> $<TARGET_FILE:sextans>
-#           ../matrices/nasa4704/nasa4704.mtx 16
-#   DEPENDS sextans ${hw_emu_xclbin}
-#   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-# add_custom_target(
-#   hw
-#   COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/Sextans.xilinx_u280_xdma_201920_3.hw_generate_bitstream.sh
-#   COMMAND TAPAB=$<TARGET_PROPERTY:${hw_xclbin},FILE_NAME> $<TARGET_FILE:sextans>
-#           ../matrices/nasa4704/nasa4704.mtx 16
-#   DEPENDS sextans hls
-#   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_target(
+  hwsim
+  COMMAND TAPAB=$<TARGET_PROPERTY:${hw_emu_xclbin},FILE_NAME> $<TARGET_FILE:sextans>
+          ../matrices/nasa4704/nasa4704.mtx 16
+  DEPENDS sextans ${hw_emu_xclbin}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_target(
+  hw
+  COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/Sextans.xilinx_u280_xdma_201920_3.hw_generate_bitstream.sh
+  COMMAND TAPAB=$<TARGET_PROPERTY:${hw_xclbin},FILE_NAME> $<TARGET_FILE:sextans>
+          ../matrices/nasa4704/nasa4704.mtx 16
+  DEPENDS sextans hls
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
