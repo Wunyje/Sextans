@@ -24,6 +24,8 @@ template <typename T>
 using aligned_vector = std::vector<T, tapa::aligned_allocator<T>>;
 
 int main(int argc, char **argv) {
+    google::InitGoogleLogging(argv[0]);
+    google::InstallFailureSignalHandler(); // 这会让崩的时候打印更详细的堆栈
     printf("start host\n");
 
     float ALPHA = 0.85;

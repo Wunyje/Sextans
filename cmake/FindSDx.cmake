@@ -56,6 +56,7 @@ function(add_xocc_hw_link_targets target_name xo_file)
     COMMENT "Linking hardware kernel ${xo_file} -> ${xclbin_file}"
   )
 
-  # target 名字不要带路径
-  add_custom_target(${target_name}_hw_link ALL DEPENDS ${xclbin_file})
+  # 自动去掉路径，只保留文件名作为 target 名字
+  get_filename_component(target_basename ${target_name} NAME)
+  add_custom_target(${target_basename}_hw_link ALL DEPENDS ${xclbin_file})
 endfunction()
