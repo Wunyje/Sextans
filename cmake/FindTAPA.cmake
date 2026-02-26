@@ -15,17 +15,17 @@ set(TAPA_INCLUDE_DIR
 file(GLOB VITIS_HLS_INCLUDE_DIR "/tools/Xilinx/Vitis_HLS/*/include")
 
 # 2. 库文件定义：指向标准的 lib 目录
-# 使用 lib*.so 或 lib*.a 取决于你希望动态链接还是静态链接
-set(TAPA_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libtapa.a")
+# 使用 .so 动态链接以避免 Boost.Context 静态初始化问题
+set(TAPA_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libtapa.so")
 
-set(CONTEXT_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libcontext.a") # 提供了 Boost 相关的符号
-set(FRT_LIBRARY  "${TAPA_INSTALL_PREFIX}/lib/libfrt.a")
-set(GFLAGS_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libgflags.a")
-set(GLOG_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libglog.a") # 使用 .a 更常见
-set(CL_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/libOpenCL.a")
-set(THREAD_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libthread.a") # 提供了 Boost 相关的符号
-set(TINYXML_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/libtinyxml2.a")
-set(YAML_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/libyaml-cpp.a")
+set(CONTEXT_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libcontext.so") # 提供了 Boost 相关的符号
+set(FRT_LIBRARY  "${TAPA_INSTALL_PREFIX}/lib/libfrt.so")
+set(GFLAGS_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libgflags.so")
+set(GLOG_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libglog.so")
+set(CL_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/libOpenCL.so")
+set(THREAD_LIBRARY "${TAPA_INSTALL_PREFIX}/lib/libthread.so") # 提供了 Boost 相关的符号
+set(TINYXML_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/libtinyxml2.so")
+set(YAML_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/libyaml-cpp.so")
 # set(DPI_LEGACY_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/tapa_fast_cosim_dpi_legacy_rdi.so")
 # set(DPI_XV_LIBRARY   "${TAPA_INSTALL_PREFIX}/lib/tapa_fast_cosim_dpi_xv.so")
 
@@ -40,8 +40,6 @@ set(TAPA_DEPENDENCY_LIBS
     "${GFLAGS_LIBRARY}"
     "${THREAD_LIBRARY}"
     "${CONTEXT_LIBRARY}"
-    "${DPI_LEGACY_LIBRARY}"
-    "${DPI_XV_LIBRARY}"
 )
 
 # 4. 创建 tapa::tapa 目标
@@ -54,6 +52,8 @@ set_target_properties(tapa::tapa PROPERTIES
     IMPORTED_LOCATION "${TAPA_LIBRARY}"
     # 使用干净的列表变量进行链接
     INTERFACE_LINK_LIBRARIES "${TAPA_DEPENDENCY_LIBS}"
+    # 添加 rpath 以便运行时找到共享库
+    INTERFACE_LINK_OPTIONS "-Wl,-rpath,${TAPA_INSTALL_PREFIX}/lib"
 )
 
 # 4. TAPA 编译器宏定义
