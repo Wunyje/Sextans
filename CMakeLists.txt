@@ -6,7 +6,7 @@ set(PLATFORM
     xilinx_u280_xdma_201920_3
     CACHE STRING "Target FPGA platform")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Wno-write-strings")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings -fsplit-stack")
 
 # 编辑 CMakeLists.txt，在 find_package 前添加模块路径
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
